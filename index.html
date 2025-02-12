@@ -9,13 +9,30 @@
 </head>
 
 <body>
-    <div class="container">
-        <h2>Demo Web</h2>
-        <h2>( Testing Client-Server Communication )</h2>
-        <textarea id="message" placeholder="Type your message here..."></textarea>
-        <button id="sendBtn">Send to Server</button>
-        <div id="response"></div>
+
+    <div id="login">
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+
     </div>
+
+    <div id="fileSection" style="display:none;">
+        <h2>Upload File</h2>
+        <input type="file" id="fileInput" onchange="previewFile()" />
+        <div id="filePreviewContainer">
+            <p id="fileNamePreview"></p>
+            <img id="filePreview" style="display: none; max-width: 300px;" />
+        </div>
+        <button onclick="uploadFile()">Upload</button>
+        <button onclick="fetchFiles()">Refresh</button>
+        <h2>Files on Server</h2>
+        <ul id="fileList"></ul>
+    </div>
+    
+
+
     <script src="script.js"></script>
 </body>
 

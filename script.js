@@ -32,3 +32,41 @@ sendBtn.addEventListener('click', () => {
 socket.onclose = () => {
     console.log('Disconnected from server.');
 };
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) {
+        alert('Please enter a username and password.');
+        return;
+    }
+}
+
+function previewFile(){
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const fileNamePreview = document.getElementById('fileNamePreview');
+    const filePreview = document.getElementById('filePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+    }
+
+    //Clear Previous Preview
+    fileNamePreview.textContent = '';
+    filePreview.display = 'none';
+
+    // For image files : show image preview
+    if (file.type.startsWith('image/')) {
+        reader.onload = function (e) => {
+            filePreview.style.display = 'inline'; //Display image element
+            filePreview.src = e.target.result; // Displuay image
+    };
+    reader.readAsDataURL(file); // Read the image file
+    } else {
+        fileNamePreview.textContent = `File selected: ${file.name}`;
+    } else {
+        fileNamePreview.textContent = 'No file selected'; // Clear text if no file 
+        filePreview.style.display = 'none'; //Hide image if no file selected
+    }
