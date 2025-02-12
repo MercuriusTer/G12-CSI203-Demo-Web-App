@@ -17,8 +17,8 @@
         <button onclick="login()">Login</button>
 
     </div>
-
-    <div id="fileSection" style="display:none;">
+    
+    <div id="fileSection" style="display:block;">
         <h2>Upload File</h2>
         <input type="file" id="fileInput" onchange="previewFile()" />
         <div id="filePreviewContainer">
@@ -29,9 +29,8 @@
         <button onclick="fetchFiles()">Refresh</button>
         <h2>Files on Server</h2>
         <ul id="fileList"></ul>
+        
     </div>
-    
-
 
     <script src="script.js"></script>
 </body>

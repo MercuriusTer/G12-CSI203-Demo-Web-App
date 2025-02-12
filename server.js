@@ -13,31 +13,11 @@ var hostname = os.hostname();
 const app = express();
 
 // สร้าง WebSocket Server
-const wss = new WebSocket.Server({ port:portNumber }, () => {
-
-    //console.clear();
-    console.log('WebSocket server Name:' + hostname);
-
-    //console.log('WebSocket server is running on ws://localhost:8080');
-    console.log(`WebSocket server is running on ws://${host}:${portNumber}`);
-
-});
+const wss = new WebSocket.Server({ noServer: true });
 
 // ฟังการเชื่อมต่อจากไคลเอ็นต์
 wss.on('connection', (ws) => {
     console.log(hostname + 'Demo-Client Connected.');
-
-    // รับข้อความจากไคลเอ็นต์
-    ws.on('message', (message) => {
-        console.log(`Received: ${message}`);
-        // ตรวจสอบข้อความเพื่อระบุเงื่อนไข
-        if(message == 'What you name?'){
-            ws.send(`My name is ${hostname}`);
-        }
-        else
-        // ส่งข้อความตอบกลับไปยังไคลเอ็นต์
-        ws.send(`Server received: ${message}`);
-    });
 
     // เมื่อไคลเอ็นต์ปลดการเชื่อมต่อ
     ws.on('close', () => {
@@ -47,6 +27,8 @@ wss.on('connection', (ws) => {
 
 // Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
+app.use(express.json());
+app.use(cors());
 
 // Function to generate the short timestamp
 function getShortDate() {
@@ -61,7 +43,7 @@ function getShortDate() {
     return `${year}${month}${day}-${hours}${minutes}${seconds}`;
 }
 
-// -- File Upload  --
+// -- Zone File Upload  --
 
 // Define storage settings to keep original file name
 const storage = multer.diskStorage({
@@ -90,8 +72,63 @@ app.post('/upload', upload.single('file'), (req, res) => {
     res.json({ message: 'File uploaded successfully', file: req.file });
 });
 
+// -- Zone List All File --
+
 // Endpoint to list all files
 app.get('/files', (req, res) => {
     const files = fs.readdirSync('./uploads');
     res.json(files);
 });
+
+// -- Zone Download File --
+app.get('/download/:filename', (req, res) => {
+    const filePath = path.join(__dirname, 'uploads', req.params.filename);
+    res.download(filePath);
+});
+// -- Zone Delete File --
+app.delete('/delete/:filename', (req, res) => {
+ const filePath = path.join(__dirname, 'uploads', req.params.filename);
+ 
+ if(fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.json({success: true, message: 'File deleted successfully'});
+ } else{
+    res.status(404).json({success: false, message: 'File not found'});
+ }
+});                                                                                                                                    
+
+// -- Zone Login --
+const users = [
+    { username: 'admin', password: 'password' }
+];
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    // Find the user (simulating a database lookup)
+    const user = users.find(u => u.username === username);
+    if (!user) {
+        return res.json({ success: false, message: 'Invalid username' });
+        }
+
+    // Compare the password (plain text comparison)
+    if (user.password === password) {
+        return res.json({ success: true, message: 'Login successful' });
+    } else {
+        return res.json({ success: false, message: 'Invalid password' });
+    }});
+
+
+
+  // Start the HTTp ser
+  const server = app.listen(portNumber, () => {
+    console.log(`Server running at http://localhost:${portNumber}`);
+  });
+  
+  // Upgrade HTTP Server to WS Server
+  server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, ws => {
+        wss.emit('connection', ws,request)
+    })
+  })
