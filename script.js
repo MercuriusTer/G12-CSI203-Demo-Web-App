@@ -1,6 +1,7 @@
 // ==============================================================
 let ws;
 let loggedIn = false;
+fetchFiles();
 
 // Login เสร็จแล้ว
 async function login() {
@@ -178,7 +179,3 @@ async function deleteFile(filename) {
         alert(data.message || "Failed to delete file.");
     }
 }
-
-fetchFiles();
-
-
